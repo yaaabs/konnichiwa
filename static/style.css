@@ -1,36 +1,80 @@
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #fdf6f0;
-  color: #333;
-  padding: 2rem;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: linear-gradient(135deg, #ffe5ec 0%, #c1f0f6 100%);
+  margin: 0;
+  padding: 16px;
 }
 
 h2 {
-  color: #da627d;
+  text-align: center;
+  color: #d16ba5;
+  margin-bottom: 16px;
 }
 
 #chat-box {
-  border: 2px solid #da627d;
-  padding: 1rem;
+  background: #fff;
+  border: 1px solid #d16ba5;
+  border-radius: 8px;
   height: 300px;
   overflow-y: scroll;
-  background-color: #fff8f8;
-  margin-bottom: 1rem;
-  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+#chat-form {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 #message-input {
-  padding: 0.5rem;
-  width: 70%;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+  flex: 1;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #d16ba5;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #f9f9f9;
 }
 
-button {
-  padding: 0.5rem 1rem;
-  background-color: #da627d;
-  color: white;
+button[type="submit"] {
+  background: #d16ba5;
+  color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
+  padding: 0 16px;
+  font-size: 1rem;
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+button[type="submit"]:hover {
+  background: #c777b9;
+}
+
+@media (max-width: 600px) {
+  #chat-box {
+    height: 200px;
+    font-size: 0.95rem;
+  }
+  #chat-form {
+    flex-direction: column;
+    gap: 4px;
+    max-width: 100%;
+  }
+  #message-input, button[type="submit"] {
+    width: 100%;
+    font-size: 1rem;
+  }
+}
+
+/* Emoji theme for join/leave messages */
+#chat-box div:contains('joined') {
+  color: #6bcbee;
+}
+#chat-box div:contains('left') {
+  color: #d16ba5;
 }

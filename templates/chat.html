@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Konnichiyabs Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
   <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
@@ -22,7 +23,7 @@
       socket.on("message", data => {
         const box = document.getElementById("chat-box");
         const div = document.createElement("div");
-        div.textContent = `${data.username}: ${data.msg}`;
+        div.textContent = `[${data.timestamp}] ${data.username}: ${data.msg}`;
         box.appendChild(div);
       });
 
@@ -39,15 +40,37 @@
         div.textContent = `❌ ${data.username} left`;
         box.appendChild(div);
       });
+
+      // Typing indicator
+      const typingBox = document.createElement("div");
+      typingBox.id = "typing-box";
+      typingBox.style = "margin: 8px 0; color: #888; text-align: left; min-height: 24px;";
+      document.getElementById("chat-box").after(typingBox);
+
+      document.getElementById("message-input").addEventListener("input", () => {
+        socket.emit("typing", { username });
+      });
+
+      socket.on("user_typing", data => {
+        typingBox.textContent = `${data.username} is typing...`;
+        setTimeout(() => {
+          typingBox.textContent = "";
+        }, 2000);
+      });
     };
   </script>
 </head>
 <body>
-  <h2>Welcome to Konnichiyabs, {{ username }}!</h2>
-  <div id="chat-box" style="border: 1px solid #ccc; height: 300px; overflow-y: scroll;"></div>
-  <form id="chat-form">
-    <input id="message-input" placeholder="Type message..." required>
-    <button type="submit">Send</button>
+  <h2>🌷 Welcome to Konnichiyabs, {{ username }}!</h2>
+  <div id="chat-box" style="border: 1px solid #ccc; height: 300px; overflow-y: scroll; background: #fff; border-radius: 8px; margin-bottom: 10px;">
+    {% for m in messages %}
+      <div>[{{ m['timestamp'] }}] {{ m['username'] }}: {{ m['msg'] }}</div>
+    {% endfor %}
+  </div>
+  <div id="typing-box" style="margin: 8px 0; color: #888; text-align: left; min-height: 24px;"></div>
+  <form id="chat-form" style="display: flex; gap: 8px;">
+    <input id="message-input" placeholder="Type message..." required style="flex: 1; min-width: 0;">
+    <button type="submit" style="padding: 0 16px;">Send</button>
   </form>
 </body>
 </html>

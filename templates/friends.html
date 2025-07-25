@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Friends | Konnichiyabs</title>
+</head>
+<body>
+  {% include 'navbar.html' %}
+  <h2>Welcome, {{ username }}!</h2>
+  <h3>Your Friends</h3>
+  {% if error %}
+    <div style="color: red;">{{ error }}</div>
+  {% endif %}
+  <ul>
+    {% for friend in friends %}
+      <li>
+        {{ friend }}
+        <a href="/dm/{{ friend }}">DM</a>
+      </li>
+    {% endfor %}
+  </ul>
+  <form method="POST" action="/friends">
+    <input type="text" name="friend_username" placeholder="Add friend by username" required>
+    <button type="submit">Add Friend</button>
+  </form>
+  <a href="/chat">Go to Chat</a>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Settings | Konnichiyabs</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  {% include 'navbar.html' %}
+  <h2>Settings</h2>
+  <form action="/logout" method="get">
+    <button type="submit">Logout</button>
+  </form>
+</body>
+</html>

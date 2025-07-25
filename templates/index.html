@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Konnichiyabs Home</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  {% include 'navbar.html' %}
+  <h2>Welcome to Konnichiyabs!</h2>
+  <p>
+    <a href="/login">Login</a> or
+    <a href="/register">Register</a> to start chatting.
+  </p>
+</body>
+</html>

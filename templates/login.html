@@ -5,9 +5,14 @@
 </head>
 <body>
   <h2>Konnichiyabs Login</h2>
-  <form method="POST" action="/chat">
+  {% if error %}
+    <div style="color: red;">{{ error }}</div>
+  {% endif %}
+  <form method="POST" action="/login">
     <input type="text" name="username" placeholder="Enter your name" required>
-    <button type="submit">Enter Chat</button>
+    <input type="password" name="password" placeholder="Password" required>
+    <button type="submit">Login</button>
   </form>
+  <p>Don't have an account? <a href="/register">Register</a></p>
 </body>
 </html>

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DM with {{ friend_username }} | Konnichiyabs</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  {% include 'navbar.html' %}
+  <h2>Chat with {{ friend_username }}</h2>
+  <p>DM chat feature coming soon.</p>
+  <a href="/inbox">Back to Inbox</a>
+</body>
+</html>

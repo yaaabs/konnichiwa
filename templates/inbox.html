@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Inbox | Konnichiyabs</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  {% include 'navbar.html' %}
+  <h2>Inbox for {{ username }}</h2>
+  <ul>
+    {% for friend in friends %}
+      <li>
+        <a href="/dm/{{ friend }}">Chat with {{ friend }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  <p><a href="/friends">Manage Friends</a></p>
+</body>
+</html>

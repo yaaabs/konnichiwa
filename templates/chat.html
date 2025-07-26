@@ -20,11 +20,17 @@
         input.value = "";
       });
 
+      function scrollChatToBottom() {
+        const box = document.getElementById("chat-box");
+        box.scrollTop = box.scrollHeight;
+      }
+
       socket.on("message", data => {
         const box = document.getElementById("chat-box");
         const div = document.createElement("div");
         div.textContent = `[${data.timestamp}] ${data.username}: ${data.msg}`;
         box.appendChild(div);
+        scrollChatToBottom();
       });
 
       socket.on("user_joined", data => {
@@ -32,6 +38,7 @@
         const div = document.createElement("div");
         div.textContent = `👋 ${data.username} joined`;
         box.appendChild(div);
+        scrollChatToBottom();
       });
 
       socket.on("user_left", data => {
@@ -39,24 +46,37 @@
         const div = document.createElement("div");
         div.textContent = `❌ ${data.username} left`;
         box.appendChild(div);
+        scrollChatToBottom();
       });
 
-      // Typing indicator
-      const typingBox = document.createElement("div");
-      typingBox.id = "typing-box";
-      typingBox.style = "margin: 8px 0; color: #888; text-align: left; min-height: 24px;";
-      document.getElementById("chat-box").after(typingBox);
-
+      // Typing indicator (multi-user)
+      const typingBox = document.getElementById("typing-box");
+      let typingTimeout;
       document.getElementById("message-input").addEventListener("input", () => {
         socket.emit("typing", { username });
       });
 
-      socket.on("user_typing", data => {
-        typingBox.textContent = `${data.username} is typing...`;
-        setTimeout(() => {
+      socket.on("users_typing", data => {
+        const users = data.users.filter(u => u !== username);
+        if (users.length === 0) {
+          typingBox.textContent = "";
+          return;
+        }
+        if (users.length === 1) {
+          typingBox.textContent = `${users[0]} is typing...`;
+        } else if (users.length === 2) {
+          typingBox.textContent = `${users[0]} and ${users[1]} are typing...`;
+        } else {
+          typingBox.textContent = `${users.slice(0, -1).join(', ')}, and ${users.slice(-1)} are typing...`;
+        }
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
           typingBox.textContent = "";
         }, 2000);
       });
+
+      // Initial autoscroll on page load
+      scrollChatToBottom();
     };
   </script>
 </head>

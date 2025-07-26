@@ -17,9 +17,12 @@ h2 {
   border-radius: 8px;
   height: 300px;
   overflow-y: scroll;
+  overflow-x: hidden; /* Prevent horizontal scroll */
   padding: 8px;
   margin-bottom: 10px;
   font-size: 1rem;
+  white-space: pre-line; /* Preserve line breaks, wrap text */
+  word-break: break-word; /* Break long words */
 }
 
 #chat-form {

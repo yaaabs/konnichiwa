@@ -11,6 +11,8 @@ socketio = SocketIO(app)
 
 # Simple in-memory user tracking
 connected_users = set()
+# Track currently typing users for world chat
+currently_typing = set()
 
 def get_db_connection():
     conn = sqlite3.connect('chat.db')
@@ -221,7 +223,16 @@ def handle_message(msg):
 @socketio.on('typing')
 def handle_typing(data):
     username = data['username']
-    emit('user_typing', {'username': username}, broadcast=True, include_self=False)
+    currently_typing.add(username)
+    emit('users_typing', {'users': list(currently_typing)}, broadcast=True, include_self=True)
+    # Remove user from typing after 2 seconds
+    socketio.start_background_task(remove_typing_user, username)
+
+def remove_typing_user(username):
+    import time
+    time.sleep(2)
+    currently_typing.discard(username)
+    socketio.emit('users_typing', {'users': list(currently_typing)}, broadcast=True)
 
 @socketio.on('typing_dm')
 def handle_typing_dm(data):
@@ -235,6 +246,8 @@ def handle_disconnect():
     if username in connected_users:
         connected_users.remove(username)
         emit('user_left', {'username': username, 'users': list(connected_users)}, broadcast=True)
+    currently_typing.discard(username)
+    emit('users_typing', {'users': list(currently_typing)}, broadcast=True)
 
 @socketio.on('join_dm')
 def handle_join_dm(data):

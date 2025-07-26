@@ -43,6 +43,15 @@ def init_db():
             FOREIGN KEY(friend_id) REFERENCES users(id)
         )
     ''')
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS dm_messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            room_id TEXT NOT NULL,
+            username TEXT NOT NULL,
+            msg TEXT NOT NULL,
+            timestamp TEXT NOT NULL
+        )
+    ''')
     conn.commit()
     conn.close()
 
@@ -161,24 +170,31 @@ def dm(friend_username):
     if 'username' not in session:
         return redirect(url_for('login'))
     username = session['username']
-    # For now, just show a placeholder DM chat page
-    return render_template('dm.html', username=username, friend_username=friend_username)
+    conn = get_db_connection()
+    user = conn.execute('SELECT id FROM users WHERE username = ?', (username,)).fetchone()
+    friend = conn.execute('SELECT id FROM users WHERE username = ?', (friend_username,)).fetchone()
+    # Validate friendship
+    is_friend = False
+    if user and friend:
+        is_friend = conn.execute(
+            'SELECT 1 FROM friends WHERE user_id = ? AND friend_id = ?', (user['id'], friend['id'])
+        ).fetchone() is not None
+    # Generate room ID by sorting usernames alphabetically
+    room_id = "_".join(sorted([username, friend_username]))
+    # Fetch last 50 DM messages for this room
+    messages = conn.execute(
+        'SELECT username, msg, timestamp FROM dm_messages WHERE room_id = ? ORDER BY id ASC LIMIT 50', (room_id,)
+    ).fetchall()
+    conn.close()
+    if not is_friend:
+        return "Not friends!", 403
+    return render_template('chat_dm.html', username=username, friend_username=friend_username, room_id=room_id, messages=messages)
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/chat', methods=['GET', 'POST'])
+@app.route('/chat', methods=['GET'])
 def chat():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        if not username:
-            return redirect(url_for('login'))
-        session['username'] = username
-    else:
-        username = session.get('username')
-        if not username:
-            return redirect(url_for('login'))
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    username = session['username']
     # Fetch last 50 messages for chat history
     conn = get_db_connection()
     messages = conn.execute('SELECT username, msg, timestamp FROM messages ORDER BY id ASC LIMIT 50').fetchall()
@@ -207,12 +223,43 @@ def handle_typing(data):
     username = data['username']
     emit('user_typing', {'username': username}, broadcast=True, include_self=False)
 
+@socketio.on('typing_dm')
+def handle_typing_dm(data):
+    room_id = data['room_id']
+    username = data['username']
+    emit('user_typing_dm', {'username': username}, room=room_id, include_self=False)
+
 @socketio.on('disconnect')
 def handle_disconnect():
     username = session.get('username', 'Anonymous')
     if username in connected_users:
         connected_users.remove(username)
         emit('user_left', {'username': username, 'users': list(connected_users)}, broadcast=True)
+
+@socketio.on('join_dm')
+def handle_join_dm(data):
+    room_id = data['room_id']
+    join_room(room_id)
+
+@socketio.on('private_message')
+def handle_private_message(data):
+    room_id = data['room_id']
+    msg = data['msg']
+    username = session.get('username', 'Anonymous')
+    timestamp = datetime.now().strftime('%H:%M')
+    # Save DM message to DB
+    conn = get_db_connection()
+    conn.execute(
+        'INSERT INTO dm_messages (room_id, username, msg, timestamp) VALUES (?, ?, ?, ?)',
+        (room_id, username, msg, timestamp)
+    )
+    conn.commit()
+    conn.close()
+    emit('private_message', {'msg': msg, 'username': username, 'timestamp': timestamp}, room=room_id)
+
+@app.route('/')
+def index():
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)

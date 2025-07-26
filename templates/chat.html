@@ -62,7 +62,7 @@
 </head>
 <body>
   {% include 'navbar.html' %}
-  <h2>🌷 Welcome to Konnichiyabs, {{ username }}!</h2>
+  <h2>🌷 Welcome to Konnichiyabs World Chat, {{ username }}!</h2>
   <div id="chat-box" style="border: 1px solid #ccc; height: 300px; overflow-y: scroll; background: #fff; border-radius: 8px; margin-bottom: 10px;">
     {% for m in messages %}
       <div>[{{ m['timestamp'] }}] {{ m['username'] }}: {{ m['msg'] }}</div>

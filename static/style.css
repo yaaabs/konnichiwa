@@ -60,14 +60,25 @@ button[type="submit"]:hover {
     height: 200px;
     font-size: 0.95rem;
   }
-  #chat-form {
+  #chat-form, #dm-form {
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
     max-width: 100%;
   }
-  #message-input, button[type="submit"] {
+  #message-input, #dm-input, button[type="submit"], #dm-form button {
     width: 100%;
-    font-size: 1rem;
+    font-size: 1.3rem; /* Larger font for mobile */
+    padding: 18px 14px; /* More padding for easier typing */
+    border-radius: 14px;
+    box-sizing: border-box;
+  }
+  #message-input, #dm-input {
+    margin-bottom: 6px;
+    min-height: 48px; /* Ensures tall input box */
+  }
+  button[type="submit"], #dm-form button {
+    padding: 18px 0;
+    min-height: 48px;
   }
 }
 

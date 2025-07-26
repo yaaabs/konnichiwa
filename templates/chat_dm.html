@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DM with {{ friend_username }} | Konnichiyabs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script>
+    const socket = io();
+    window.onload = () => {
+      const username = "{{ username }}";
+      const friend = "{{ friend_username }}";
+      const room_id = "{{ room_id }}";
+      socket.emit("join_dm", { room_id });
+
+      const form = document.getElementById("dm-form");
+      form.addEventListener("submit", e => {
+        e.preventDefault();
+        const input = document.getElementById("dm-input");
+        socket.emit("private_message", { room_id, msg: input.value });
+        input.value = "";
+      });
+
+      socket.on("private_message", data => {
+        const box = document.getElementById("dm-box");
+        const div = document.createElement("div");
+        div.textContent = `[${data.timestamp}] ${data.username}: ${data.msg}`;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+      });
+
+      // Typing indicator for DM
+      const typingBox = document.getElementById("typing-box");
+      let typingTimeout;
+      document.getElementById("dm-input").addEventListener("input", () => {
+        socket.emit("typing_dm", { room_id, username });
+      });
+
+      socket.on("user_typing_dm", data => {
+        typingBox.textContent = `${data.username} is typing...`;
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+          typingBox.textContent = "";
+        }, 2000);
+      });
+    };
+  </script>
+</head>
+<body>
+  {% include 'navbar.html' %}
+  <h2 style="text-align:right; color:#d16ba5;">Chat with {{ friend_username }}</h2>
+  <div id="dm-box" style="border: 1px solid #ccc; height: 300px; overflow-y: scroll; background: #fff; border-radius: 8px; margin-bottom: 10px;">
+    {% for m in messages %}
+      <div>[{{ m['timestamp'] }}] {{ m['username'] }}: {{ m['msg'] }}</div>
+    {% endfor %}
+  </div>
+  <div id="typing-box" style="margin: 8px 0; color: #888; text-align: left; min-height: 24px;"></div>
+  <form id="dm-form" style="display: flex; gap: 8px;">
+    <input id="dm-input" placeholder="Type message..." required style="flex: 1; min-width: 0;">
+    <button type="submit" style="padding: 0 16px;">Send</button>
+  </form>
+  <a href="/inbox">Back to Inbox</a>
+</body>
+</html>

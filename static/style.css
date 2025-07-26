@@ -11,18 +11,33 @@ h2 {
   margin-bottom: 16px;
 }
 
-#chat-box {
+.chat-container {
+  max-width: 500px;
+  width: 100%;
+  margin: 32px auto;
+  background: rgba(255,255,255,0.95);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(209,107,165,0.08);
+  padding: 18px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#chat-box, #dm-box {
   background: #fff;
   border: 1px solid #d16ba5;
   border-radius: 8px;
   height: 300px;
   overflow-y: scroll;
-  overflow-x: hidden; /* Prevent horizontal scroll */
+  overflow-x: hidden;
   padding: 8px;
   margin-bottom: 10px;
   font-size: 1rem;
-  white-space: pre-line; /* Preserve line breaks, wrap text */
-  word-break: break-word; /* Break long words */
+  white-space: pre-line;
+  word-break: break-word;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 #chat-form, #dm-form {
@@ -65,34 +80,75 @@ button[type="submit"]:hover, #dm-form button:hover {
   background: #c777b9;
 }
 
+/* Messenger-style send button for mobile */
 @media (max-width: 600px) {
   body {
     padding: 0;
     min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: block;
+    justify-content: unset;
+    align-items: unset;
   }
-  #chat-box {
+  .chat-container {
+    max-width: 100vw;
+    width: 100vw;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: none;
+    padding: 0;
+  }
+  #chat-box, #dm-box {
     height: 180px;
-    font-size: 1rem;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    border-radius: 0;
+    padding: 6px;
+    background: #fff;
+    border: 1px solid #d16ba5;
   }
   #chat-form, #dm-form {
-    flex-direction: column;
-    gap: 14px;
-    max-width: 95vw;
+    flex-direction: row;
+    gap: 8px;
+    max-width: 100vw;
     margin: 0 auto;
-    align-items: stretch;
+    align-items: center;
     justify-content: center;
+    background: none;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
   }
-  #message-input, #dm-input, button[type="submit"], #dm-form button {
+  #message-input, #dm-input {
     width: 100%;
-    font-size: 1.4rem;
-    padding: 22px 16px;
+    font-size: 1.3rem;
+    padding: 20px 14px;
     border-radius: 16px;
-    min-height: 56px;
+    min-height: 54px;
     margin: 0;
     box-sizing: border-box;
+    background: #f9f9f9;
+    border: 1px solid #d16ba5;
+  }
+  button[type="submit"], #dm-form button {
+    width: 48px;
+    min-width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 50%;
+    background: #1877f2;
+    color: #fff;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 6px;
+    box-shadow: 0 2px 8px rgba(24,119,242,0.12);
+    border: none;
+    font-weight: bold;
+  }
+  button[type="submit"]:hover, #dm-form button:hover {
+    background: #0056d2;
   }
 }
 

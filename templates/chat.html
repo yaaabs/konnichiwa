@@ -82,16 +82,22 @@
 </head>
 <body>
   {% include 'navbar.html' %}
-  <h2>🌷 Welcome to Konnichiyabs World Chat, {{ username }}!</h2>
-  <div id="chat-box" style="border: 1px solid #ccc; height: 300px; overflow-y: scroll; background: #fff; border-radius: 8px; margin-bottom: 10px;">
-    {% for m in messages %}
-      <div>[{{ m['timestamp'] }}] {{ m['username'] }}: {{ m['msg'] }}</div>
-    {% endfor %}
+  <div class="chat-container">
+    <h2>🌷 Welcome to Konnichiyabs World Chat, {{ username }}!</h2>
+    <div id="chat-box">
+      {% for m in messages %}
+        <div>[{{ m['timestamp'] }}] {{ m['username'] }}: {{ m['msg'] }}</div>
+      {% endfor %}
+    </div>
+    <div id="typing-box" style="margin: 8px 0; color: #888; text-align: left; min-height: 24px;"></div>
+    <form id="chat-form">
+      <input id="message-input" placeholder="Type message..." required>
+      <button type="submit" aria-label="Send">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M3 20L21 12L3 4V10L15 12L3 14V20Z" fill="currentColor"/>
+        </svg>
+      </button>
+    </form>
   </div>
-  <div id="typing-box" style="margin: 8px 0; color: #888; text-align: left; min-height: 24px;"></div>
-  <form id="chat-form" style="display: flex; gap: 8px;">
-    <input id="message-input" placeholder="Type message..." required style="flex: 1; min-width: 0;">
-    <button type="submit" style="padding: 0 16px;">Send</button>
-  </form>
 </body>
 </html>

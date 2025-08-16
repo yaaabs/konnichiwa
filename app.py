@@ -11,7 +11,7 @@ socketio = SocketIO(app)
 
 # Simple in-memory user tracking
 connected_users = set()
-# Track currently typing users for world chat
+# Track currently typing users for world chat -test
 currently_typing = set()
 
 def get_db_connection():
